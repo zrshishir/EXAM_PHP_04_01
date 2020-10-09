@@ -34,27 +34,16 @@
 <div class="container">
 
     <div class="row">
-
         <div class="col-md-8 offset-md-2">
-
             <div class="row">
-
                 <div class="col-md-12 text-center">
-
                     <h4>Office Colleague Information</h4>
-
                 </div>
-
                 <div class="col-md-12 text-right mb-5">
-
                     <a class="btn btn-success" href="javascript:void(0)" id="createNewColleague"> Create New Colleague</a>
-
                 </div>
-
                 <div class="col-md-12">
-
                     <table class="table table-bordered data-table">
-
                         <thead>
 
                             <tr>
@@ -63,37 +52,24 @@
                                 <th>Office Name</th>
                                 <th>Office Address</th>
                                 <th>No. of Colleagues</th>
-
                                 <th width="280px">OPT</th>
 
                             </tr>
-
                         </thead>
-
                         <tbody>
-
                         </tbody>
-
                     </table>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
 
    
 
 <div class="modal fade" id="ajaxModel" aria-hidden="true">
-
     <div class="modal-dialog">
-
         <div class="modal-content">
-
             <div class="modal-header">
 
                 <h4 class="modal-title" id="modelHeading"></h4>
@@ -159,13 +135,9 @@
                     <div class="col-sm-offset-2 col-sm-10">
                         <button type="submit" class="btn btn-primary" id="saveBtn" value="create">Save changes</button>
                     </div>
-
                 </form>
-
             </div>
-
         </div>
-
     </div>
 </div>
 </body>
@@ -176,19 +148,13 @@
 
     $(function () {
 
-     
-
     $.ajaxSetup({
 
         headers: {
-
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-
         }
 
     });
-
-    
 
     var table = $('.data-table').DataTable({
 
@@ -214,13 +180,9 @@
     $('#createNewColleague').click(function () {
 
         $('#saveBtn').val("create-Colleague");
-
         $('#Colleague_id').val('');
-
         $('#ColleagueForm').trigger("reset");
-
         $('#modelHeading').html("Create New Colleague");
-
         $('#ajaxModel').modal('show');
 
     });
@@ -229,22 +191,44 @@
 
     $('body').on('click', '.editColleague', function () {
 
-        var Colleague_id = $(this).data('id');
+        var colleague_id = $(this).data('id');
 
-        $.get("{{ route('colleagues.index') }}" +'/' + Colleague_id +'/edit', function (data) {
+        $.get("{{ route('colleagues.index') }}" +'/' + colleague_id +'/edit', function (data) {
 
             $('#modelHeading').html("Edit Colleague");
-
             $('#saveBtn').val("edit-user");
-
             $('#ajaxModel').modal('show');
-
             $('#Colleague_id').val(data.id);
+            $('#office_name').val(data.office_name);
+            $('#office_address').val(data.office_address);
+            $('#office_phone').val(data.office_phone);
+            $('#appointment_letter').val(data.appointment_letter);
+            $('#colleague_name').val(data.colleague_name);
+            $('#colleague_mobile').val(data.colleague_mobile);
+            $('#colleague_address').val(data.colleague_address);
+            $('#photo').val(data.photo);
+        })
 
-            $('#name').val(data.name);
+    });
 
-            $('#detail').val(data.detail);
+    $('body').on('click', '.viewColleague', function () {
 
+        var colleague_id = $(this).data('id');
+
+        $.get("{{ route('colleagues.index') }}" +'/' + colleague_id +'/view', function (data) {
+
+            $('#modelHeading').html("View Colleague");
+            $('#saveBtn').val("edit-user");
+            $('#ajaxModel').modal('show');
+            $('#Colleague_id').val(data.id);
+            $('#office_name').val(data.office_name);
+            $('#office_address').val(data.office_address);
+            $('#office_phone').val(data.office_phone);
+            $('#appointment_letter').val(data.appointment_letter);
+            $('#colleague_name').val(data.colleague_name);
+            $('#colleague_mobile').val(data.colleague_mobile);
+            $('#colleague_address').val(data.colleague_address);
+            $('#photo').val(data.photo);
         })
 
     });
@@ -254,37 +238,24 @@
     $('#saveBtn').click(function (e) {
 
         e.preventDefault();
-
         $(this).html('Sending..');
 
-    
-
         $.ajax({
-
             data: $('#ColleagueForm').serialize(),
-
             url: "{{ route('colleagues.store') }}",
-
             type: "POST",
-
             dataType: 'json',
 
             success: function (data) {
-
                 $('#ColleagueForm').trigger("reset");
-
                 $('#ajaxModel').modal('hide');
-
                 table.draw();
 
             },
 
             error: function (data) {
-
                 console.log('Error:', data);
-
                 $('#saveBtn').html('Save Changes');
-
             }
 
         });
@@ -294,36 +265,25 @@
 
     $('body').on('click', '.deleteColleague', function (){
 
-        var Colleague_id = $(this).data("id");
-
+        var colleague_id = $(this).data("id");
         var result = confirm("Are You sure want to delete !");
 
         if(result){
-
             $.ajax({
-
                 type: "DELETE",
-
-                url: "{{ route('colleagues.store') }}"+'/'+Colleague_id,
-
+                url: "{{ route('colleagues.store') }}"+'/'+colleague_id,
                 success: function (data) {
-
                     table.draw();
-
                 },
 
                 error: function (data) {
-
                     console.log('Error:', data);
-
                 }
 
             });
 
         }else{
-
             return false;
-
         }
 
     });

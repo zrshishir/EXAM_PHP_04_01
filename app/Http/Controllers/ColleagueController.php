@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Colleague;
 use DataTables;
+use Validator, Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 
 class ColleagueController extends Controller
 {
@@ -26,11 +29,11 @@ class ColleagueController extends Controller
 
             $data = Colleague::latest()->get();
             return Datatables::of($data)
-
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
-                           $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editProduct">Edit</a>';
-                           $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteProduct">Delete</a>';
+                           $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editColleague">Edit</a>';
+                        //    $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="View" class="btn btn-warning btn-sm viewColleague">View</a>';
+                           $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteColleague">Delete</a>';
                         return $btn;
                     })
                     ->rawColumns(['action'])
@@ -62,14 +65,21 @@ class ColleagueController extends Controller
                     'office_name' => $request->office_name, 
                     'office_address' => $request->office_address,
                     'office_phone' => $request->office_phone,
-                    'appointment_letter' => $request->appointment_letter,
+                    'appointment_letter' => $this->imageUpload($request->appointment_letter),
                     'colleague_name' => $request->colleague_name,
                     'colleague_address' => $request->colleague_address,
                     'colleague_mobile' => $request->colleague_mobile,
-                    'photo' => $request->photo,
+                    'photo' => $this->imageUpload($request->photo),
                 ]);        
         return response()->json(['success'=>'Colleague saved successfully.']);
 
+    }
+
+    public function imageUpload($image){
+        $imageName = microtime(true) . '.' . 'png';
+        $path = '/imports/documents/' . $imageName;
+        Storage::disk('local')->put($path, $image);
+        return $imageName;
     }
 
     /**
@@ -78,7 +88,7 @@ class ColleagueController extends Controller
 
      *
 
-     * @param  \App\Colleague  $product
+     * @param  \App\Colleague  $colleague
 
      * @return \Illuminate\Http\Response
 
@@ -88,8 +98,18 @@ class ColleagueController extends Controller
 
     {
 
-        $product = Colleague::find($id);
-        return response()->json($product);
+        $colleague = Colleague::find($id);
+        return response()->json($colleague);
+
+    }
+
+
+    public function view($id)
+
+    {
+
+        $colleague = Colleague::find($id);
+        return response()->json($colleague);
 
     }
 
@@ -100,7 +120,7 @@ class ColleagueController extends Controller
 
      *
 
-     * @param  \App\Colleague  $product
+     * @param  \App\Colleague  $colleague
 
      * @return \Illuminate\Http\Response
 
