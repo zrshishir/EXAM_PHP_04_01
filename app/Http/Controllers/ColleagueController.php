@@ -60,16 +60,38 @@ class ColleagueController extends Controller
     public function store(Request $request)
 
     {
+        // $validator = Validator::make($request->all(), [
+        //     'office_name' => 'required|string',
+        //     'office_address' => 'required|string',
+        //     'office_phone' => 'required|numeric',
+        //     'appointment_letter' => 'required|file|mimes:pdf',
+        //     'colleague_name' => 'required|numeric',            
+        //     'colleague_address' => 'required|numeric',            
+        //     'colleague_mobile' => 'required|numeric',          
+        //     'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:1024',  
+        // ]);
+        
+        // if($validator->fails()){
+        //     $errors = $validator->errors();
+        //     $errorMsg = null;
+            
+        //     foreach ($errors->all() as $msg) {
+        //         $errorMsg .= $msg;
+        //     }
+
+        //     return response()->json(['warning'=>'Form validation error']);
+        // }
+
         Colleague::updateOrCreate(['id' => $request->product_id],
                 [
                     'office_name' => $request->office_name, 
                     'office_address' => $request->office_address,
                     'office_phone' => $request->office_phone,
-                    'appointment_letter' => $this->imageUpload($request->appointment_letter),
+                    'appointment_letter' => ($request->file('appointment_letter')) ? $this->imageUpload($request->file('appointment_letter')) : "",
                     'colleague_name' => $request->colleague_name,
                     'colleague_address' => $request->colleague_address,
                     'colleague_mobile' => $request->colleague_mobile,
-                    'photo' => $this->imageUpload($request->photo),
+                    'photo' => ($request->file('photo')) ? $this->imageUpload($request->file('photo')) : "",
                 ]);        
         return response()->json(['success'=>'Colleague saved successfully.']);
 
